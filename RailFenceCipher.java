@@ -6,6 +6,8 @@ public class RailFenceCipher {
 
         Scanner sc = new Scanner(System.in);
 
+        System.out.println("Program to demonstrate Rail Fence Cipher");
+
         System.out.println("Enter the plain text:");
         String plaintext = sc.nextLine();
 
@@ -124,11 +126,25 @@ public class RailFenceCipher {
             }
         }
 
-        System.out.print("Decrypted text  ");
+        System.out.println();
+
+        System.out.println("Rail Fence Pattern:");
+        System.out.println();
+        for (int i = 0; i < depth; i++) {
+            for (int j = 0; j < text.length; j++) {
+                if (rails[i][j] != '\n') {
+                    System.out.print(rails[i][j] + "  ");
+                } else {
+                    System.out.print("   "); // Two spaces for alignment
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+        System.out.print("Decrypted text: ");
         for (int i = 0; i < decrypted.length; i++) {
             System.out.print(decrypted[i]);
         }
-        System.out.println();
 
         sc.close();
     }
