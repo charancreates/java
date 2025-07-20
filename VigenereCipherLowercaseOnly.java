@@ -56,14 +56,31 @@ public class VigenereCipherLowercaseOnly {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter plain text (lowercase letters only):");
+        System.out.println("Program to demonstrate Vigenere Cipher ");
+
+        System.out.println("Enter plain text: ");
         String plaintext = sc.nextLine();
 
-        System.out.println("Enter key (lowercase letters only):");
+        System.out.println("Enter key: ");
         String key = sc.nextLine();
 
+        // Print Vigenere Matrix
+        System.out.println("\n\nVigenere Matrix (a-z):");
+        System.out.print("  ");
+        for (int i = 0; i < 26; i++) {
+            System.out.print(" " + (char) ('a' + i));
+        }
+        System.out.println();
+        for (int row = 0; row < 26; row++) {
+            System.out.print((char) ('a' + row) + "  ");
+            for (int col = 0; col < 26; col++) {
+                System.out.print((char) (((row + col) % 26) + 'a') + " ");
+            }
+            System.out.println();
+        }
+
         String ciphertext = encrypt(plaintext, key);
-        System.out.println("Encrypted text: " + ciphertext);
+        System.out.println("\nEncrypted text: " + ciphertext);
 
         String decrypted = decrypt(ciphertext, key);
         System.out.println("Decrypted text: " + decrypted);
