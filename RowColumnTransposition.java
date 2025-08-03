@@ -1,145 +1,100 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class RowColumnTransposition {
-
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\n");
-        System.out.println("--- ROW COLUMN TRANSPOSTION ALGORITHM---");
+        System.out.println("Program to implement Row Column Transposition \n");
 
-        System.out.println("\nEnter the plain text:");
-        String input = sc.nextLine();
-        String plaintext = removeSpaces(input);
-        int[] key = getKeyFromUser(sc);
+        System.out.print("Enter the plain text: ");
+        String plaintext = sc.nextLine().replaceAll(" ", "");
+
+        int[] key = getKey(sc);
 
         String ciphertext = encrypt(plaintext, key);
         System.out.println("\nCiphertext: " + ciphertext);
 
         String decrypted = decrypt(ciphertext, key);
-        System.out.println("\nDecrypted text: " + decrypted);
-        System.out.println("\n");
+        System.out.println("\nDecrypted text: " + decrypted.replaceAll("X", ""));
     }
 
-    static String removeSpaces(String input) {
-        String result = "";
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            if (c != ' ') {
-                result += c;
-            }
-        }
-        return result;
-    }
-
-    static int[] getKeyFromUser(Scanner sc) {
-        int[] key = new int[100];
-        int count, valid, i, j, num;
-        while (1 == 1) {
-            System.out.println("\nEnter the length of the key:");
+    static int[] getKey(Scanner sc) {
+        int count;
+        int[] key;
+        while (true) {
+            System.out.print("\nEnter length of the key: ");
             count = sc.nextInt();
-
-            System.out.println("Enter the key digits one by one (total " + count + " digits):");
-            for (i = 0; i < count; i++) {
+            key = new int[count];
+            System.out.println("Enter key digits (unique integers from 1 to " + count + "):");
+            Set<Integer> seen = new HashSet<>();
+            boolean valid = true;
+            for (int i = 0; i < count; i++) {
                 key[i] = sc.nextInt();
-            }
-
-            valid = 1;
-            int[] freq = new int[count + 1];
-            for (i = 0; i < count; i++) {
-                if (key[i] < 1 || key[i] > count) {
-                    valid = 0;
-                    break;
-                }
-                freq[key[i]] = freq[key[i]] + 1;
-            }
-            for (i = 1; i <= count; i++) {
-                if (freq[i] != 1) {
-                    valid = 0;
-                    break;
+                if (key[i] < 1 || key[i] > count || !seen.add(key[i])) {
+                    valid = false;
                 }
             }
-
-            if (valid == 1)
+            if (valid)
                 break;
-            System.out.println("Invalid key. Use unique integers from 1 to " + count + ". Try again.");
+            System.out.println("Invalid key. Try again.");
         }
-
-        int[] finalKey = new int[count];
-        for (i = 0; i < count; i++) {
-            finalKey[i] = key[i];
-        }
-        return finalKey;
+        return key;
     }
 
     static String encrypt(String plaintext, int[] key) {
         int cols = key.length;
-        int len = plaintext.length();
-        int rows = len / cols;
-        if (len % cols != 0)
-            rows++;
-
+        int rows = (int) Math.ceil((double) plaintext.length() / cols);
         char[][] grid = new char[rows][cols];
         int idx = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (idx < len) {
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                if (idx < plaintext.length()) {
                     grid[i][j] = plaintext.charAt(idx++);
                 } else {
                     grid[i][j] = 'X';
                 }
-            }
-        }
 
-        System.out.println("Encryption Grid:");
-        for (int i = 0; i < key.length; i++) {
-            System.out.print(key[i] + " ");
-        }
-        System.out.println("");
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                System.out.print(grid[i][j] + " ");
-            }
+        // Print encryption grid
+        System.out.println("\nEncryption Grid:");
+        System.out.println("Key Order: " + Arrays.toString(key));
+        for (char[] row : grid) {
+            for (char ch : row)
+                System.out.print(ch + " ");
             System.out.println();
         }
 
-        String ciphertext = "";
-        for (int k = 1; k <= cols; k++) {
-            for (int j = 0; j < cols; j++) {
-                if (key[j] == k) {
-                    for (int i = 0; i < rows; i++) {
-                        ciphertext += grid[i][j];
-                    }
-                    break;
-                }
-            }
-        }
-        return ciphertext;
+        StringBuilder ciphertext = new StringBuilder();
+        for (int k = 1; k <= cols; k++)
+            for (int j = 0; j < cols; j++)
+                if (key[j] == k)
+                    for (int i = 0; i < rows; i++)
+                        ciphertext.append(grid[i][j]);
+        return ciphertext.toString();
     }
 
     static String decrypt(String ciphertext, int[] key) {
         int cols = key.length;
-        int len = ciphertext.length();
-        int rows = len / cols;
-
+        int rows = ciphertext.length() / cols;
         char[][] grid = new char[rows][cols];
         int idx = 0;
-        for (int k = 1; k <= cols; k++) {
-            for (int j = 0; j < cols; j++) {
-                if (key[j] == k) {
-                    for (int i = 0; i < rows; i++) {
+        for (int k = 1; k <= cols; k++)
+            for (int j = 0; j < cols; j++)
+                if (key[j] == k)
+                    for (int i = 0; i < rows; i++)
                         grid[i][j] = ciphertext.charAt(idx++);
-                    }
-                    break;
-                }
-            }
+
+        // Print decryption grid
+        System.out.println("\nDecryption Grid:");
+        System.out.println("Key Order: " + Arrays.toString(key));
+        for (char[] row : grid) {
+            for (char ch : row)
+                System.out.print(ch + " ");
+            System.out.println();
         }
 
-        String decrypted = "";
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                decrypted += grid[i][j];
-            }
-        }
-        return decrypted;
+        StringBuilder decrypted = new StringBuilder();
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                decrypted.append(grid[i][j]);
+        return decrypted.toString();
     }
 }
