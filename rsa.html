@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simplest RSA</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Simplest RSA Encryption</h2>
+
+    P: <input id="p" value="7" type="number" /><br /><br />
+    Q: <input id="q" value="11" type="number" /><br /><br />
+    Message: <input id="msg" value="6" type="number" /><br /><br />
+
+    <button onclick="doRSA()">Generate & Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button><br /><br />
+
+    <div id="output"></div>
+
+    <script>
+      let n, e, d, encrypted;
+
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+
+      function doRSA() {
+        const p = parseInt(document.getElementById("p").value);
+        const q = parseInt(document.getElementById("q").value);
+        const msg = parseInt(document.getElementById("msg").value);
+
+        n = p * q;
+        const phi = (p - 1) * (q - 1);
+
+        e = 3;
+        while (gcd(e, phi) !== 1) {
+          e += 2;
+        }
+
+        for (let i = 1; i < phi; i++) {
+          if ((e * i) % phi === 1) {
+            d = i;
+            break;
+          }
+        }
+
+        encrypted = BigInt(msg) ** BigInt(e) % BigInt(n);
+
+        document.getElementById("output").innerHTML =
+          `<b>KEYS</b><br>` +
+          `n = ${n}<br>φ(n) = ${phi}<br>Public Key (e) = ${e}<br>Private Key (d) = ${d}<br><br>` +
+          `<b>ENCRYPTION</b><br>` +
+          `Original (M): ${msg}<br>Encrypted (C): ${encrypted}`;
+      }
+
+      function decrypt() {
+        if (!encrypted) {
+          alert("Encrypt a message first!");
+          return;
+        }
+
+        const decrypted = BigInt(encrypted) ** BigInt(d) % BigInt(n);
+
+        document.getElementById("output").innerHTML +=
+          `<br><br><b>DECRYPTION</b><br>` + `Decrypted Message: ${decrypted}`;
+      }
+    </script>
+  </body>
+</html>
